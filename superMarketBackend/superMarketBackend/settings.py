@@ -32,57 +32,39 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-# Application definition
 
-
-
-# INSTALLED_APPS = [
-#     'django.contrib.admin',
-#     'django.contrib.auth',
-#     'django.contrib.contenttypes',
-#     'django.contrib.sessions',
-#     'django.contrib.messages',
-#     'django_tenants',
-# ]
-
-SHARED_APPS = [
-    'django-tenants', 
-    'django.contrib.admin',  # Système d'administration Django
-    'django.contrib.auth',
+SHARED_APPS = (
+    'django_tenants',  # mandatory
+    'clients', # you must list the app where your tenant model resides in
     'django.contrib.contenttypes',
+    # everything below here is optional
+    'django.contrib.auth',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_tenants',
-    "clients"
-] 
-
+    'django.contrib.admin',)
 TENANT_APPS = (
-    'userAuth',
-
-)
+    # your tenant-specific apps
+    'userAuth',)
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 
 
-
-
-TENANT_MODEL = "clients.Client" 
-
-TENANT_DOMAIN_MODEL = "clients.Domain"  
-
-
-PUBLIC_SCHEMA_URLCONF = 'superMarketBackend.public_urls'  
+TENANT_MODEL = "clients.Client"  # Assurez-vous que le modèle existe bien
+TENANT_DOMAIN_MODEL = "clients.Domain"  # Assurez-vous que le modèle existe bien
 
 
 
 DATABASE_ROUTERS = (
-    'django_tenants.routers.TenantSyncRouter',
-)
+   'django_tenants.routers.TenantSyncRouter',
+    )
+PUBLIC_SCHEMA_URLCONF='superMarketBackend.public_urls'
+
+
 
 
 MIDDLEWARE = [
-    'django_tenant_schemas.middleware.TenantMiddleware',
+    'django_tenants.middleware.main.TenantMainMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -117,18 +99,16 @@ WSGI_APPLICATION = 'superMarketBackend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('N'),
-        'USER':os.getenv('U'),
-        'PASSWORD':os.getenv('P'),
-        'HOST': os.getenv('H'),
-        'PORT': os.getenv('PT'),
+        'ENGINE': 'django_tenants.postgresql_backend',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
-
 
 
 
