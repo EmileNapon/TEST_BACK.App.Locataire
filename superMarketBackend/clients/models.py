@@ -7,7 +7,7 @@ class Client(TenantMixin):
     created_on = models.DateField(auto_now_add=True)  # Date d'inscription
     paid_until = models.DateField(null=True, blank=True)  # Abonnement payé jusqu'à
     on_trial = models.BooleanField(default=True)  # Supermarché en essai ?
-    auto_create_schema = True  # Crée automatiquement le schéma
+    auto_create_schema =models.BooleanField(default=True)  # Crée automatiquement le schéma
     
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
@@ -20,6 +20,4 @@ class Client(TenantMixin):
 
 class Domain(DomainMixin):
     pass
-
-
 
