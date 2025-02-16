@@ -13,7 +13,6 @@ class Client(TenantMixin):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     
-    administrator = models.OneToOneField(User, on_delete=models.CASCADE, related_name='supermarket_admin')
 
     def __str__(self):
         return self.name

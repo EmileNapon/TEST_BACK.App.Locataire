@@ -42,10 +42,14 @@ SHARED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.admin',)
+    # 'django.contrib.admin',
+    'corsheaders',  # Pour gérer les requêtes cross-origin (si nécessaire)
+    'rest_framework_simplejwt',
+    
+    )
 TENANT_APPS = (
     # your tenant-specific apps
-    'userAuth',)
+   'userAuth', 'rest_framework',)
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 
@@ -64,6 +68,8 @@ PUBLIC_SCHEMA_URLCONF='superMarketBackend.public_urls'
 
 
 MIDDLEWARE = [
+     'django_tenants.middleware.TenantMiddleware',
+    'corsheaders.middleware.CorsMiddleware',   # Gérer les requêtes externes
     'django_tenants.middleware.main.TenantMainMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -152,3 +158,52 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+# JWT configuration
+
+from datetime import timedelta
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Durée de vie du token d'accès
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Durée de vie du token de rafraîchissement
+    "ROTATE_REFRESH_TOKENS": True,  # Permet de rafraîchir le token d'accès avec un refresh token
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": "LaCléSecrèteEtUnique!2025#JWtSecurisé",  # Remplace par une clé secrète sécurisée
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Type d'autorisation dans l'en-tête HTTP
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Permet l'interface web
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Authentification par JWT
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Toute requête doit être authentifiée
+        'rest_framework.permissions.AllowAny',  # Permet aux utilisateurs non authentifiés de s'inscrire
+    ]
+}
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.AllowAny',
+#     ],
+# }
+
+
+
+AUTH_USER_MODEL = 'userAuth.User'
+
+
+
+
